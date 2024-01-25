@@ -1,3 +1,11 @@
 # Project exclude paths
 /.gradle/
 /build/
+/run/saves/New World/playerdata/68cf6d02-03bc-3f3b-ab98-76a8ec749597.dat
+/run/saves/New World/advancements/68cf6d02-03bc-3f3b-ab98-76a8ec749597.json
+/run/saves/New World/stats/68cf6d02-03bc-3f3b-ab98-76a8ec749597.json
+/run/logs/2024-01-25-2.log.gz
+/run/logs/debug-2.log.gz
+/run/saves/New World/playerdata/ed5fc327-7b3a-37aa-a9cf-7e33fcf19740.dat_old
+/run/saves/New World/data/random_sequences.dat
+/run/saves/New World/session.lock
