@@ -1,5 +1,6 @@
 package com.miyamura;
 
+import com.miyamura.Item.ModItems;
 import net.fabricmc.api.ModInitializer;
 
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ public class RelicsOfArcana implements ModInitializer {
 	@Override
 	public void onInitialize() {
 
+		ModItems.registerItems();
 
 		LOGGER.info("Hello Fabric world!");
 	}
