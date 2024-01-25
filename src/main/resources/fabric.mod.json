@@ -1,0 +1,40 @@
+{
+	"schemaVersion": 1,
+	"id": "relicsofarcana",
+	"version": "${version}",
+	"name": "Relics of Arcana",
+	"description": "Adds relics inspired by Jojos and Akashic Records, and more!",
+	"authors": [
+		"Miyamura!"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/arcanarelic/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.miyamura.RelicsOfArcana"
+		],
+		"client": [
+			"com.miyamura.RelicsOfArcanaClient"
+		],
+		"fabric-datagen": [
+			"com.miyamura.RelicsOfArcanaDataGenerator"
+		]
+	},
+	"mixins": [
+		"arcanarelic.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.15.6",
+		"minecraft": "~1.20.1",
+		"java": ">=17",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
