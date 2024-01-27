@@ -17,7 +17,7 @@ public class ModItemGroup {
 
     public static final ItemGroup MAJOR_ARCANA = Registry.register(Registries.ITEM_GROUP,
             new Identifier(RelicsOfArcana.MOD_ID,"major_arcana_tab"), FabricItemGroup.builder().displayName(Text.translatable("itemGroup.major_arcana_tab"))
-                    .icon(() -> new ItemStack(ModItems.THE_MOON)).entries((displayContext, entries) -> {
+                    .icon(() -> initCards(new ItemStack(ModItems.THE_HIGH_PRIESTESS))).entries((displayContext, entries) -> {
 
                         entries.add(initCards(new ItemStack(ModItems.THE_FOOL)));
                         entries.add(initCards(new ItemStack(ModItems.THE_MAGICIAN)));
