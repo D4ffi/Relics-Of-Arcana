@@ -5,7 +5,10 @@
   "mixins": [
     "ActionPerTick",
     "CustomPlayerMixin",
-    "ExampleMixin"
+    "ExampleMixin",
+    "JoinMixin",
+    "UnbreakableMixin",
+    "CardAbilities.PlayerAttackMixin"
   ],
   "injectors": {
     "defaultRequire": 1
