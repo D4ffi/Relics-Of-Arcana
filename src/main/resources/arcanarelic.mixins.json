@@ -8,6 +8,7 @@
     "ExampleMixin",
     "JoinMixin",
     "UnbreakableMixin",
+    "CardAbilities.LivingEntityMixin",
     "CardAbilities.PlayerAttackMixin"
   ],
   "injectors": {

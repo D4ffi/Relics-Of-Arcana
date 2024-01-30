@@ -38,7 +38,6 @@ public abstract class ActionPerTick implements IPlayerManagement {
                     hierophant_interval++;
                     if (temperance_interval == 3){
                         iPlayer.player$increaseHealthOrXp(player, 0);
-                        //iPlayer.player$increaseHealthOrXp(player, 1);
                         temperance_interval = 0;
                     }
                     if (hierophant_interval == 20){
