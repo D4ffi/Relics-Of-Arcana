@@ -6,7 +6,6 @@ import com.miyamura.Item.Cards.Temperance;
 import com.miyamura.Item.Cards.TheEmperor;
 import com.miyamura.Item.Cards.TheHierophant;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -23,19 +22,17 @@ import java.util.Set;
 public class CustomPlayerMixin implements IPlayerManagement {
 
     @Unique
-    List<ItemStack> cardsInInventory = new ArrayList<ItemStack>();
+    List<ItemStack> cardsInInventory = new ArrayList<>();
     @Unique
-    List<ItemStack> activeCards = new ArrayList<ItemStack>();
+    List<ItemStack> activeCards = new ArrayList<>();
     @Unique
-    Set<Item> goldItems = new java.util.HashSet<Item>();
+    Set<Item> goldItems = new java.util.HashSet<>();
     @Unique
     boolean firstLoop = true;
     @Unique
     final double DEFAULT_MAX_HEALTH = 20.0, HEALTH_INCREMENT = 1.0, HEALTH_MAX = 40.0;
     @Unique
     double currentHealth;
-    @Unique
-    Set<StatusEffect> blacklistedEffects = new java.util.HashSet<StatusEffect>();
 
     @Unique
     void healthCaseIncrement(PlayerEntity player) {

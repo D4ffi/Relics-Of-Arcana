@@ -15,7 +15,7 @@ import static com.miyamura.Item.Cards.TheEmperor.unbreakableStacks;
 public class UnbreakableMixin implements IEmperorItemStack {
     @Inject(method = "isDamageable", at = @At("HEAD"), cancellable = true)
     public void makeUnbreakable(CallbackInfoReturnable<Boolean> cir) {
-        for (ItemStack stack : emperor$unbreakableStacks()) {
+        for (ItemStack ignored : emperor$unbreakableStacks()) {
             cir.setReturnValue(false);
         }
     }

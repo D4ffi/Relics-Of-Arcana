@@ -18,17 +18,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(PlayerEntity.class)
 public abstract class PlayerAttackMixin implements IPlayerManagement {
-    @Unique
-    IPlayerManagement customPlayer = (IPlayerManagement) this;
+
     @Unique
     private void activateMagicianIfCardActive(Entity target) {
-        if (customPlayer.player$isCardActive(TheMagician.class)) {
+        if (this.player$isCardActive(TheMagician.class)) {
             target.setOnFireFor(10);
         }
     }
     @Unique
     private void activateJusticeIfCardActive(DamageSource source) {
-        if (customPlayer.player$isCardActive(Justice.class)) {
+        if (this.player$isCardActive(Justice.class)) {
             // spawn lightning
             generateLightningBoltOnActiveCard(source);
         }

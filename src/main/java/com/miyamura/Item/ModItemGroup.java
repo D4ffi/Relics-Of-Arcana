@@ -2,7 +2,6 @@ package com.miyamura.Item;
 
 import com.miyamura.RelicsOfArcana;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -10,9 +9,6 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-
-import java.util.UUID;
-
 public class ModItemGroup {
 
     public static final ItemGroup MAJOR_ARCANA = Registry.register(Registries.ITEM_GROUP,
@@ -45,6 +41,7 @@ public class ModItemGroup {
                     }).build());
 
     public static void registerItemGroups(){
+        RelicsOfArcana.LOGGER.info("Registering item groups for Relics of Arcana...");
     }
     private static ItemStack initCards(ItemStack stack) {
         NbtCompound nbt = stack.getOrCreateNbt();

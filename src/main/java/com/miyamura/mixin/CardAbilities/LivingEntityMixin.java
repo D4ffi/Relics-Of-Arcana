@@ -13,25 +13,39 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import java.util.Set;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin {
-    @Shadow public abstract EntityGroup getGroup();
+    @Shadow
+    public abstract EntityGroup getGroup();
+
     @Inject(method = "canHaveStatusEffect", at = @At("HEAD"), cancellable = true)
     public void cancelEffects(StatusEffectInstance effect, CallbackInfoReturnable<Boolean> cir) {
+        // extraction of effects into a Set.
+        Set<StatusEffect> effectsToCancel = Set.of(
+                StatusEffects.POISON,
+                StatusEffects.WEAKNESS,
+                StatusEffects.WITHER,
+                StatusEffects.SLOWNESS,
+                StatusEffects.MINING_FATIGUE,
+                StatusEffects.NAUSEA,
+                StatusEffects.BLINDNESS,
+                StatusEffects.HUNGER,
+                StatusEffects.UNLUCK,
+                StatusEffects.INSTANT_DAMAGE,
+                StatusEffects.BAD_OMEN
+        );
+
         if (this.getGroup() == EntityGroup.DEFAULT) {
+            assert (Object) this instanceof PlayerEntity;
             PlayerEntity player = (PlayerEntity) (Object) this;
             IPlayerManagement customPlayer = (IPlayerManagement) player;
-
             StatusEffect statusEffect = effect.getEffectType();
 
-            if (customPlayer.player$isCardActive(TheHighPriestess.class)) {
-                if (statusEffect == StatusEffects.POISON || statusEffect == StatusEffects.WEAKNESS || statusEffect == StatusEffects.WITHER
-                ||  statusEffect == StatusEffects.SLOWNESS || statusEffect == StatusEffects.MINING_FATIGUE || statusEffect == StatusEffects.NAUSEA
-                ||  statusEffect == StatusEffects.BLINDNESS || statusEffect == StatusEffects.HUNGER || statusEffect == StatusEffects.UNLUCK
-                ||  statusEffect == StatusEffects.INSTANT_DAMAGE || statusEffect == StatusEffects.BAD_OMEN){
+            // easier to add or remove effects from set without much code modification.
+            if (customPlayer.player$isCardActive(TheHighPriestess.class) && effectsToCancel.contains(statusEffect)) {
                 cir.setReturnValue(false);
-                }
             }
         }
     }
