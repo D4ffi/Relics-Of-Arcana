@@ -2,7 +2,9 @@ package com.miyamura.mixin;
 
 import com.miyamura.Interfaces.IPlayerManagement;
 import com.miyamura.Item.Cards.CardManager;
+import com.miyamura.Item.Cards.Temperance;
 import com.miyamura.Item.Cards.TheEmperor;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -12,6 +14,7 @@ import org.spongepowered.asm.mixin.Unique;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Mixin(PlayerEntity.class)
 public class CustomPlayerMixin implements IPlayerManagement {
@@ -22,6 +25,42 @@ public class CustomPlayerMixin implements IPlayerManagement {
     List<ItemStack> activeCards = new ArrayList<ItemStack>();
     @Unique
     List<Item> goldItems = new ArrayList<Item>();
+    @Unique
+    boolean firstLoop = true;
+    @Unique
+    double DEFAULT_MAX_HEALTH = 20.0, HEALTH_INCREMENT = 1.0, HEALTH_MAX = 40.0;
+    @Unique
+    double currentHealth;
+    @Unique
+    void healthCaseIncrement(PlayerEntity player){
+        if (player$isCardActive(Temperance.class)){
+            if (firstLoop){
+                DEFAULT_MAX_HEALTH = player.getAttributeBaseValue(EntityAttributes.GENERIC_MAX_HEALTH);
+                currentHealth = DEFAULT_MAX_HEALTH;
+                firstLoop = false;
+            }
+            if(currentHealth < HEALTH_MAX){
+                currentHealth += HEALTH_INCREMENT;
+                Objects.requireNonNull(player.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH)).setBaseValue(currentHealth);
+            }
+        }
+    }
+    @Unique
+    void xpCaseIncrement(PlayerEntity player){
+        player.experienceLevel++;
+    }
+    @Unique
+    void resetHealth(PlayerEntity player){
+        Objects.requireNonNull(player.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH)).setBaseValue(DEFAULT_MAX_HEALTH);
+        currentHealth = DEFAULT_MAX_HEALTH;
+        if (player.getHealth() > DEFAULT_MAX_HEALTH){
+            player.setHealth((float) DEFAULT_MAX_HEALTH);
+        }
+    }
+    @Unique
+    void setXpCase(PlayerEntity player, int level){
+        player.experienceLevel = level;
+    }
     @Override
     public void player$checkInventory(PlayerEntity player) {
         cardsInInventory.clear();
@@ -90,11 +129,39 @@ public class CustomPlayerMixin implements IPlayerManagement {
         }
         return isEmperorInInventory;
     }
-
     @Override
     public void player$clearEmperorEffect() {
         if (!player$isEmperorInInventory()){
             TheEmperor.unbreakableStacks.clear();
+        }
+    }
+    @Override
+    public void player$increaseHealthOrXp(PlayerEntity player, int type) {
+        switch (type){
+            case 0   : player$resetHealth(player);healthCaseIncrement(player); break;
+            case 1  : xpCaseIncrement(player); break;
+        }
+    }
+
+    @Override
+    public void player$resetHealth(PlayerEntity player) {
+        if (player.isDead()){
+            resetHealth(player);
+            firstLoop = true;
+        } else {
+            if (!player$isCardActive(Temperance.class)){
+                resetHealth(player);
+                firstLoop = true;
+            }
+        }
+    }
+
+    @Override
+    public void player$setHealthOrXp(PlayerEntity player, int type) {
+        int level = player.experienceLevel = 7;
+        switch (type){
+            case 0   : resetHealth(player); break;
+            case 1  : setXpCase(player,level); break;
         }
     }
 }

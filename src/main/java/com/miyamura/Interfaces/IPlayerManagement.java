@@ -15,5 +15,8 @@ public interface IPlayerManagement {
     boolean player$isCardActive(Class<?> card);
     boolean player$isEmperorInInventory();
     void player$clearEmperorEffect();
+    void player$increaseHealthOrXp(PlayerEntity player, int type);
+    void player$resetHealth(PlayerEntity player);
+    void player$setHealthOrXp(PlayerEntity player,int type);
 
 }

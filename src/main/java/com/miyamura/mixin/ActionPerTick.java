@@ -20,9 +20,13 @@ public abstract class ActionPerTick implements IPlayerManagement {
     IPlayerManagement player = (IPlayerManagement) this;
     @Inject(method = "tick", at = @At("HEAD"))
     private void tick(CallbackInfo ci) {
-        if (tickCounter >= UPDATE_INTERVAL) {
+        if (tickCounter % UPDATE_INTERVAL == 0) {
             player.player$checkInventory((PlayerEntity) (Object) this);
             player.player$clearEmperorEffect();
+
+        }
+        if (tickCounter % TEMPERANCE_INTERVAL == 0){
+            player.player$increaseHealthOrXp((PlayerEntity) (Object) this, 0);
             tickCounter = 0;
         }
         tickCounter++;
