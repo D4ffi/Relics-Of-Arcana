@@ -18,6 +18,5 @@ public interface IPlayerManagement {
     void player$clearEmperorEffect();
     void player$increaseHealthOrXp(PlayerEntity player, int type);
     void player$resetHealth(PlayerEntity player);
-    void player$setHealthOrXp(PlayerEntity player,int type);
 
 }

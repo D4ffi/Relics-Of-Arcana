@@ -13,10 +13,7 @@ import net.minecraft.item.Items;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Mixin(PlayerEntity.class)
 public class CustomPlayerMixin implements IPlayerManagement {
@@ -26,20 +23,24 @@ public class CustomPlayerMixin implements IPlayerManagement {
     @Unique
     List<ItemStack> activeCards = new ArrayList<>();
     @Unique
-    Set<Item> goldItems = new java.util.HashSet<>();
+    Set<Item> goldItems = new HashSet<>();
     @Unique
-    boolean firstLoop = true;
+    boolean firstHealthLoop = true;
     @Unique
     final double DEFAULT_MAX_HEALTH = 20.0, HEALTH_INCREMENT = 1.0, HEALTH_MAX = 40.0;
     @Unique
     double currentHealth;
+    @Unique
+    final int XP_MAX = 30;
+    @Unique
+    int currentXp;
 
     @Unique
     void healthCaseIncrement(PlayerEntity player) {
         if (player$isCardActive(Temperance.class)) {
-            if (firstLoop) {
+            if (firstHealthLoop) {
                 currentHealth = DEFAULT_MAX_HEALTH;
-                firstLoop = false;
+                firstHealthLoop = false;
             }
             if (currentHealth < HEALTH_MAX) {
                 currentHealth += HEALTH_INCREMENT;
@@ -50,8 +51,11 @@ public class CustomPlayerMixin implements IPlayerManagement {
 
     @Unique
     void xpCaseIncrement(PlayerEntity player) {
-        if (player$isCardActive(TheHierophant.class)) {
-            player.experienceLevel++;
+        if (player$isCardActive(TheHierophant.class)){
+            currentXp = player.experienceLevel;
+            if (currentXp < XP_MAX) {
+                player.experienceLevel++;
+            }
         }
     }
 
@@ -62,11 +66,6 @@ public class CustomPlayerMixin implements IPlayerManagement {
         if (player.getHealth() > DEFAULT_MAX_HEALTH) {
             player.setHealth((float) DEFAULT_MAX_HEALTH);
         }
-    }
-
-    @Unique
-    void setXpCase(PlayerEntity player, int level) {
-        player.experienceLevel = level;
     }
 
     @Override
@@ -166,20 +165,7 @@ public class CustomPlayerMixin implements IPlayerManagement {
     public void player$resetHealth(PlayerEntity player) {
         if (player.isDead() || !player$isCardActive(Temperance.class)) {
             resetHealth(player);
-            firstLoop = true;
-        }
-    }
-
-    @Override
-    public void player$setHealthOrXp(PlayerEntity player, int type) {
-        int level = player.experienceLevel = 7;
-        switch (type) {
-            case 0:
-                resetHealth(player);
-                break;
-            case 1:
-                setXpCase(player, level);
-                break;
+            firstHealthLoop = true;
         }
     }
 }
