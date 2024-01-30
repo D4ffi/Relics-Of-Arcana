@@ -4,6 +4,7 @@ import com.miyamura.Interfaces.IPlayerManagement;
 import com.miyamura.Item.Cards.CardManager;
 import com.miyamura.Item.Cards.Temperance;
 import com.miyamura.Item.Cards.TheEmperor;
+import com.miyamura.Item.Cards.TheHierophant;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -28,65 +29,74 @@ public class CustomPlayerMixin implements IPlayerManagement {
     @Unique
     boolean firstLoop = true;
     @Unique
-    double DEFAULT_MAX_HEALTH = 20.0, HEALTH_INCREMENT = 1.0, HEALTH_MAX = 40.0;
+    final double DEFAULT_MAX_HEALTH = 20.0, HEALTH_INCREMENT = 1.0, HEALTH_MAX = 40.0;
     @Unique
     double currentHealth;
+
     @Unique
-    void healthCaseIncrement(PlayerEntity player){
-        if (player$isCardActive(Temperance.class)){
-            if (firstLoop){
-                DEFAULT_MAX_HEALTH = player.getAttributeBaseValue(EntityAttributes.GENERIC_MAX_HEALTH);
+    void healthCaseIncrement(PlayerEntity player) {
+        if (player$isCardActive(Temperance.class)) {
+            if (firstLoop) {
                 currentHealth = DEFAULT_MAX_HEALTH;
                 firstLoop = false;
             }
-            if(currentHealth < HEALTH_MAX){
+            if (currentHealth < HEALTH_MAX) {
                 currentHealth += HEALTH_INCREMENT;
                 Objects.requireNonNull(player.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH)).setBaseValue(currentHealth);
             }
         }
     }
+
     @Unique
-    void xpCaseIncrement(PlayerEntity player){
-        player.experienceLevel++;
+    void xpCaseIncrement(PlayerEntity player) {
+        if (player$isCardActive(TheHierophant.class)) {
+            player.experienceLevel++;
+        }
     }
+
     @Unique
-    void resetHealth(PlayerEntity player){
+    void resetHealth(PlayerEntity player) {
         Objects.requireNonNull(player.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH)).setBaseValue(DEFAULT_MAX_HEALTH);
         currentHealth = DEFAULT_MAX_HEALTH;
-        if (player.getHealth() > DEFAULT_MAX_HEALTH){
+        if (player.getHealth() > DEFAULT_MAX_HEALTH) {
             player.setHealth((float) DEFAULT_MAX_HEALTH);
         }
     }
+
     @Unique
-    void setXpCase(PlayerEntity player, int level){
+    void setXpCase(PlayerEntity player, int level) {
         player.experienceLevel = level;
     }
+
     @Override
     public void player$checkInventory(PlayerEntity player) {
         cardsInInventory.clear();
-        for (ItemStack stack : player.getInventory().main){
-            if(stack.getItem() instanceof CardManager){
+        for (ItemStack stack : player.getInventory().main) {
+            if (stack.getItem() instanceof CardManager) {
                 cardsInInventory.add(stack);
             }
         }
         player$activateOrDeactivateCards(player);
     }
+
     @Override
     public void player$activateOrDeactivateCards(PlayerEntity player) {
         activeCards.clear();
-        for(ItemStack stack : cardsInInventory){
-            if(stack.getOrCreateNbt().getBoolean("isActive")){
+        for (ItemStack stack : cardsInInventory) {
+            if (stack.getOrCreateNbt().getBoolean("isActive")) {
                 activeCards.add(stack);
                 ((CardManager) stack.getItem()).activateAbility(player);
-            } else{
+            } else {
                 ((CardManager) stack.getItem()).deactivateAbility(player);
             }
         }
     }
+
     @Override
     public List<ItemStack> player$getActiveCards(PlayerEntity player) {
         return activeCards;
     }
+
     @Override
     public void player$setGoldItems() {
         goldItems.clear();
@@ -102,15 +112,17 @@ public class CustomPlayerMixin implements IPlayerManagement {
         goldItems.add(Items.GOLDEN_SHOVEL);
         goldItems.add(Items.GOLDEN_HOE);
     }
+
     @Override
     public List<Item> player$EmperorGoldItems() {
         return goldItems;
     }
+
     @Override
     public boolean player$isCardActive(Class<?> card) {
         boolean isCardActive = false;
-        for (ItemStack stack : activeCards){
-            if (stack.getItem().getClass() == card) {
+        for (ItemStack stack : activeCards) {
+            if (stack.getItem().getClass().equals(card)) {
                 isCardActive = true;
                 break;
             }
@@ -121,47 +133,52 @@ public class CustomPlayerMixin implements IPlayerManagement {
     @Override
     public boolean player$isEmperorInInventory() {
         boolean isEmperorInInventory = false;
-        for (ItemStack stack : cardsInInventory){
-            if (stack.getItem().getClass() == TheEmperor.class) {
+        for (ItemStack stack : cardsInInventory) {
+            if (stack.getItem().getClass().equals(TheEmperor.class)) {
                 isEmperorInInventory = true;
                 break;
             }
         }
         return isEmperorInInventory;
     }
+
     @Override
     public void player$clearEmperorEffect() {
-        if (!player$isEmperorInInventory()){
+        if (!player$isEmperorInInventory()) {
             TheEmperor.unbreakableStacks.clear();
         }
     }
+
     @Override
     public void player$increaseHealthOrXp(PlayerEntity player, int type) {
-        switch (type){
-            case 0   : player$resetHealth(player);healthCaseIncrement(player); break;
-            case 1  : xpCaseIncrement(player); break;
+        switch (type) {
+            case 0:
+                healthCaseIncrement(player);
+                break;
+            case 1:
+                xpCaseIncrement(player);
+                break;
         }
     }
 
     @Override
     public void player$resetHealth(PlayerEntity player) {
-        if (player.isDead()){
+        if (player.isDead() || !player$isCardActive(Temperance.class)) {
             resetHealth(player);
             firstLoop = true;
-        } else {
-            if (!player$isCardActive(Temperance.class)){
-                resetHealth(player);
-                firstLoop = true;
-            }
         }
     }
 
     @Override
     public void player$setHealthOrXp(PlayerEntity player, int type) {
         int level = player.experienceLevel = 7;
-        switch (type){
-            case 0   : resetHealth(player); break;
-            case 1  : setXpCase(player,level); break;
+        switch (type) {
+            case 0:
+                resetHealth(player);
+                break;
+            case 1:
+                setXpCase(player, level);
+                break;
         }
     }
 }
