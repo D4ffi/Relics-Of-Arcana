@@ -1,10 +1,7 @@
 package com.miyamura.mixin.CardAbilities;
 
 import com.miyamura.Interfaces.IPlayerManagement;
-import com.miyamura.Item.Cards.Death;
-import com.miyamura.Item.Cards.Justice;
-import com.miyamura.Item.Cards.TheHangedMan;
-import com.miyamura.Item.Cards.TheMagician;
+import com.miyamura.Item.Cards.*;
 import com.miyamura.RelicsOfArcana;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -48,6 +45,7 @@ public abstract class PlayerAttackMixin implements IPlayerManagement {
             if (this.player$isCardActive(Death.class)) {
                 try {
                     if (target instanceof LivingEntity) {
+                        System.out.println("Target health: " + ((LivingEntity) target).getHealth() + " Max health: " + ((LivingEntity) target).getMaxHealth());
                         if (((LivingEntity) target).getHealth() <= ((LivingEntity) target).getMaxHealth() * .30) {
                             target.kill();
                         }
@@ -97,12 +95,19 @@ public abstract class PlayerAttackMixin implements IPlayerManagement {
             return defaultDamage;
         }
     }
-
-    @Inject(method = "attack", at = @At("HEAD"))
+    @Unique
+    private void activateTheLoversIfCardActive(PlayerEntity player, Entity target) {
+        if (player$isCardActive(TheLovers.class)) {
+            if (TheLovers.affectedEntities.contains(target)) {
+                TheLovers.affectedEntities.remove(target);
+            }
+        }
+    }
+    @Inject(method = "attack", at = @At("HEAD"), cancellable = true)
     public void playerAttacked(Entity target, CallbackInfo ci) {
-        //activateMagicianIfCardActive(target);
+        activateMagicianIfCardActive(target);
         activateHangedManIfCardActive(target);
-        //activateDeathIfCardActive(target, (PlayerEntity) (Object) this);
+        activateDeathIfCardActive(target, (PlayerEntity) (Object) this);
     }
 
     @Inject(method = "damage", at = @At("HEAD"))

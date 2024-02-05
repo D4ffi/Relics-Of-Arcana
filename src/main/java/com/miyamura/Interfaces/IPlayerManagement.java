@@ -26,8 +26,8 @@ public interface IPlayerManagement {
     void player$resetHealth(PlayerEntity player);
 
     // Mana methods
-    void player$increaseMana(PlayerEntity player);
-    void player$decreaseMana(PlayerEntity player);
+    //void player$increaseMana(PlayerEntity player);
+    //void player$decreaseMana(PlayerEntity player);
 
 
 
