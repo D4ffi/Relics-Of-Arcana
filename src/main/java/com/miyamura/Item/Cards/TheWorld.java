@@ -34,11 +34,11 @@ public class TheWorld extends CardManager{
         List<Entity> entities = player.getWorld().getOtherEntities(player, areaOfEffect);
         for (Entity entity : entities) {
             if (entity instanceof LivingEntity) {
-                ((LivingEntity) entity).addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 100, 100, true, true));
-                ((LivingEntity) entity).addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 100, 100, true, true));
+                ((LivingEntity) entity).addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 100, 2, true, true));
+                ((LivingEntity) entity).addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 100, 1, true, true));
             } else if (entity instanceof MobEntity) {
-                ((MobEntity) entity).addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 100, 100, true, true));
-                ((MobEntity) entity).addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 100, 100, true, true));
+                ((MobEntity) entity).addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 100, 2, true, true));
+                ((MobEntity) entity).addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 100, 1, true, true));
             }
         }
     }
