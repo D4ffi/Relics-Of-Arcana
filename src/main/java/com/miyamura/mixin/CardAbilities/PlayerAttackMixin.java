@@ -95,14 +95,6 @@ public abstract class PlayerAttackMixin implements IPlayerManagement {
             return defaultDamage;
         }
     }
-    @Unique
-    private void activateTheLoversIfCardActive(PlayerEntity player, Entity target) {
-        if (player$isCardActive(TheLovers.class)) {
-            if (TheLovers.affectedEntities.contains(target)) {
-                TheLovers.affectedEntities.remove(target);
-            }
-        }
-    }
     @Inject(method = "attack", at = @At("HEAD"), cancellable = true)
     public void playerAttacked(Entity target, CallbackInfo ci) {
         activateMagicianIfCardActive(target);
