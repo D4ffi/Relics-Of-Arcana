@@ -1,10 +1,7 @@
 package com.miyamura.mixin;
 
 import com.miyamura.Interfaces.IPlayerManagement;
-import com.miyamura.Item.Cards.CardManager;
-import com.miyamura.Item.Cards.Temperance;
-import com.miyamura.Item.Cards.TheEmperor;
-import com.miyamura.Item.Cards.TheHierophant;
+import com.miyamura.Item.Cards.*;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -25,13 +22,13 @@ public class CustomPlayerMixin implements IPlayerManagement {
     @Unique
     Set<Item> goldItems = new HashSet<>();
     @Unique
-    boolean firstHealthLoop = true;
+    boolean firstHealthLoop = true, wasEmpressActive = false;
     @Unique
     final double DEFAULT_MAX_HEALTH = 20.0, HEALTH_INCREMENT = 1.0, HEALTH_MAX = 40.0;
     @Unique
     double currentHealth;
     @Unique
-    final int XP_MAX = 30;
+    final int XP_MAX = 30, EMPRESS_ARMOR = 14;
     @Unique
     int currentXp;
 
@@ -65,6 +62,18 @@ public class CustomPlayerMixin implements IPlayerManagement {
         currentHealth = DEFAULT_MAX_HEALTH;
         if (player.getHealth() > DEFAULT_MAX_HEALTH) {
             player.setHealth((float) DEFAULT_MAX_HEALTH);
+        }
+    }
+    @Override
+    public void player$increaseArmor(PlayerEntity player){
+        if (player$isCardActive(TheEmpress.class)){
+            if (player.getArmor() <= 10){
+                Objects.requireNonNull(player.getAttributeInstance(EntityAttributes.GENERIC_ARMOR)).setBaseValue(EMPRESS_ARMOR);
+                wasEmpressActive = true;
+            }
+        } else if (wasEmpressActive){
+            Objects.requireNonNull(player.getAttributeInstance(EntityAttributes.GENERIC_ARMOR)).setBaseValue(0);
+            wasEmpressActive = false;
         }
     }
 

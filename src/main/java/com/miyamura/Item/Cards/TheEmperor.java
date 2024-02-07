@@ -1,8 +1,6 @@
 package com.miyamura.Item.Cards;
 
-import com.miyamura.Interfaces.IEmperorItemStack;
 import com.miyamura.Interfaces.IPlayerManagement;
-import net.minecraft.advancement.criterion.ItemDurabilityChangedCriterion;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;

@@ -17,4 +17,5 @@ public class TheDevil extends CardManager{
         super.appendTooltip(stack, world, tooltip, context);
         tooltip.add(Text.translatable("description.theDevil"));
     }
+
 }

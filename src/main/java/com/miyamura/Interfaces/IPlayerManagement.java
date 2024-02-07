@@ -13,6 +13,7 @@ public interface IPlayerManagement {
     void player$checkInventory(PlayerEntity player);
     void player$activateOrDeactivateCards(PlayerEntity player);
     List<ItemStack> player$getActiveCards(PlayerEntity player);
+    void player$increaseArmor(PlayerEntity player);
     boolean player$isCardActive(Class<?> card);
 
     // Emperor methods

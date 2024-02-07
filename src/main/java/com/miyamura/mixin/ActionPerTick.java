@@ -28,6 +28,7 @@ public abstract class ActionPerTick implements IPlayerManagement {
                     this.player$checkInventory(player);
                     this.player$clearEmperorEffect();
                     this.player$resetHealth((player));
+                    this.player$increaseArmor(player);
                     temperance_interval++;
                     hierophant_interval++;
                     if (temperance_interval == 3){
