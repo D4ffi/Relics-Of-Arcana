@@ -23,7 +23,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(PlayerEntity.class)
 public abstract class PlayerAttackMixin implements IPlayerManagement {
-
     @Unique
     private void activateMagicianIfCardActive(Entity target) {
         if (this.player$isCardActive(TheMagician.class)) {
