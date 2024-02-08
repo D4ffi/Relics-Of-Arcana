@@ -96,6 +96,7 @@ public abstract class PlayerAttackMixin implements IPlayerManagement {
     }
     @Inject(method = "attack", at = @At("HEAD"), cancellable = true)
     public void playerAttacked(Entity target, CallbackInfo ci) {
+        System.out.println(target + " health: " + ((LivingEntity) target).getHealth() + " Max health: " + ((LivingEntity) target).getMaxHealth());
         activateMagicianIfCardActive(target);
         activateHangedManIfCardActive(target);
         activateDeathIfCardActive(target, (PlayerEntity) (Object) this);
