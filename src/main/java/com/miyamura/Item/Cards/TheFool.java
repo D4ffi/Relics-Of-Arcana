@@ -17,6 +17,5 @@ public class TheFool extends CardManager{
         super.appendTooltip(stack, world, tooltip, context);
         tooltip.add(Text.translatable("description.theFool"));
         tooltip.add(Text.translatable("description.theFool2"));
-        // todo: add more tooltip information.
     }
 }
