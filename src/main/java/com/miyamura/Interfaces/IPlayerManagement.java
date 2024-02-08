@@ -26,6 +26,10 @@ public interface IPlayerManagement {
     void player$increaseHealthOrXp(PlayerEntity player, int type);
     void player$resetHealth(PlayerEntity player);
 
+    // The Fool methods
+    boolean player$getFoolEffect();
+    void player$setFoolCancellation(boolean underTheFool);
+
     // Mana methods
     //void player$increaseMana(PlayerEntity player);
     //void player$decreaseMana(PlayerEntity player);

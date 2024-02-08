@@ -18,6 +18,8 @@ public class CustomPlayerMixin implements IPlayerManagement {
     @Unique
     List<ItemStack> cardsInInventory = new ArrayList<>();
     @Unique
+    boolean underTheFoolEffect = false;
+    @Unique
     List<ItemStack> activeCards = new ArrayList<>();
     @Unique
     Set<Item> goldItems = new HashSet<>();
@@ -92,11 +94,13 @@ public class CustomPlayerMixin implements IPlayerManagement {
     public void player$activateOrDeactivateCards(PlayerEntity player) {
         activeCards.clear();
         for (ItemStack stack : cardsInInventory) {
-            if (stack.getOrCreateNbt().getBoolean("isActive")) {
-                activeCards.add(stack);
-                ((CardManager) stack.getItem()).activateAbility(player);
-            } else {
-                ((CardManager) stack.getItem()).deactivateAbility(player);
+            if (!player$getFoolEffect()){
+                if (stack.getOrCreateNbt().getBoolean("isActive")) {
+                    activeCards.add(stack);
+                    ((CardManager) stack.getItem()).activateAbility(player);
+                } else {
+                    ((CardManager) stack.getItem()).deactivateAbility(player);
+                }
             }
         }
     }
@@ -176,5 +180,15 @@ public class CustomPlayerMixin implements IPlayerManagement {
             resetHealth(player);
             firstHealthLoop = true;
         }
+    }
+
+    @Override
+    public boolean player$getFoolEffect() {
+        return underTheFoolEffect;
+    }
+
+    @Override
+    public void player$setFoolCancellation(boolean underTheFool) {
+        underTheFoolEffect = underTheFool;
     }
 }
