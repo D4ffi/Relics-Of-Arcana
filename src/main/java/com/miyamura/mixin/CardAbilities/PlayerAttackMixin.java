@@ -25,7 +25,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class PlayerAttackMixin implements IPlayerManagement {
     @Unique
     private void activateMagicianIfCardActive(Entity target) {
-        if (this.player$isCardActive(TheMagician.class)) {
+        if (this.player$isCardActive(TheMagician.class) && target instanceof LivingEntity) {
             target.setOnFireFor(10);
         }
     }
@@ -94,9 +94,8 @@ public abstract class PlayerAttackMixin implements IPlayerManagement {
             return defaultDamage;
         }
     }
-    @Inject(method = "attack", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "attack", at = @At("HEAD"))
     public void playerAttacked(Entity target, CallbackInfo ci) {
-        System.out.println(target + " health: " + ((LivingEntity) target).getHealth() + " Max health: " + ((LivingEntity) target).getMaxHealth());
         activateMagicianIfCardActive(target);
         activateHangedManIfCardActive(target);
         activateDeathIfCardActive(target, (PlayerEntity) (Object) this);

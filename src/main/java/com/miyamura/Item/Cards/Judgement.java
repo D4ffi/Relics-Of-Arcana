@@ -2,7 +2,10 @@ package com.miyamura.Item.Cards;
 
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,5 +19,10 @@ public class Judgement extends CardManager{
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         super.appendTooltip(stack, world, tooltip, context);
         tooltip.add(Text.translatable("description.judgement"));
+        NbtCompound nbt = stack.getOrCreateNbt();
+        String arcanePowerString = Integer.toString(nbt.getInt("ArcanePower"));
+        MutableText mutableText = Text.translatable("amount.arcanePower").formatted(Formatting.ITALIC, Formatting.GRAY);
+        mutableText.append(arcanePowerString);
+        tooltip.add(mutableText);
     }
 }

@@ -48,6 +48,8 @@
   "description.judgement"           : "§9Imposes victims fate",
   "description.theWorld"            : "§5Both Time and Space at the user's command",
 
+  "amount.arcanePower": "Stored Arcana: ",
+
 
   "ability.theFool": "Targets inside area are set to 5 hearts",
   "ability.theMagician": "Grants Fire Aspect",

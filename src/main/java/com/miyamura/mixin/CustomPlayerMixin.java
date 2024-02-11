@@ -2,6 +2,7 @@ package com.miyamura.mixin;
 
 import com.miyamura.Interfaces.IPlayerManagement;
 import com.miyamura.Item.Cards.*;
+import com.miyamura.Item.ModItems;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -24,11 +25,11 @@ public class CustomPlayerMixin implements IPlayerManagement {
     @Unique
     Set<Item> goldItems = new HashSet<>();
     @Unique
-    boolean firstHealthLoop = true, wasEmpressActive = false;
+    boolean firstHealthLoop, wasEmpressActive = false;
     @Unique
     final double DEFAULT_MAX_HEALTH = 20.0, HEALTH_INCREMENT = 1.0, HEALTH_MAX = 40.0;
     @Unique
-    double currentHealth;
+    double currentHealthMaxHealth;
     @Unique
     final int XP_MAX = 30, EMPRESS_ARMOR = 14;
     @Unique
@@ -38,19 +39,23 @@ public class CustomPlayerMixin implements IPlayerManagement {
     void healthCaseIncrement(PlayerEntity player) {
         if (player$isCardActive(Temperance.class)) {
             if (firstHealthLoop) {
-                currentHealth = DEFAULT_MAX_HEALTH;
+                if (player.getMaxHealth() > DEFAULT_MAX_HEALTH) {
+                    currentHealthMaxHealth = player.getMaxHealth();
+                } else {
+                    currentHealthMaxHealth = DEFAULT_MAX_HEALTH;
+                }
                 firstHealthLoop = false;
             }
-            if (currentHealth < HEALTH_MAX) {
-                currentHealth += HEALTH_INCREMENT;
-                Objects.requireNonNull(player.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH)).setBaseValue(currentHealth);
+            if (currentHealthMaxHealth < HEALTH_MAX) {
+                currentHealthMaxHealth += HEALTH_INCREMENT;
+                Objects.requireNonNull(player.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH)).setBaseValue(currentHealthMaxHealth);
             }
         }
     }
 
     @Unique
     void xpCaseIncrement(PlayerEntity player) {
-        if (player$isCardActive(TheHierophant.class)){
+        if (player$isCardActive(TheHierophant.class)) {
             currentXp = player.experienceLevel;
             if (currentXp < XP_MAX) {
                 player.experienceLevel++;
@@ -61,19 +66,20 @@ public class CustomPlayerMixin implements IPlayerManagement {
     @Unique
     void resetHealth(PlayerEntity player) {
         Objects.requireNonNull(player.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH)).setBaseValue(DEFAULT_MAX_HEALTH);
-        currentHealth = DEFAULT_MAX_HEALTH;
+        currentHealthMaxHealth = DEFAULT_MAX_HEALTH;
         if (player.getHealth() > DEFAULT_MAX_HEALTH) {
             player.setHealth((float) DEFAULT_MAX_HEALTH);
         }
     }
+
     @Override
-    public void player$increaseArmor(PlayerEntity player){
-        if (player$isCardActive(TheEmpress.class)){
-            if (player.getArmor() <= 10){
+    public void player$increaseArmor(PlayerEntity player) {
+        if (player$isCardActive(TheEmpress.class)) {
+            if (player.getArmor() <= 10) {
                 Objects.requireNonNull(player.getAttributeInstance(EntityAttributes.GENERIC_ARMOR)).setBaseValue(EMPRESS_ARMOR);
                 wasEmpressActive = true;
             }
-        } else if (wasEmpressActive){
+        } else if (wasEmpressActive) {
             Objects.requireNonNull(player.getAttributeInstance(EntityAttributes.GENERIC_ARMOR)).setBaseValue(0);
             wasEmpressActive = false;
         }
@@ -92,12 +98,27 @@ public class CustomPlayerMixin implements IPlayerManagement {
 
     @Override
     public void player$activateOrDeactivateCards(PlayerEntity player) {
+
+
         activeCards.clear();
         for (ItemStack stack : cardsInInventory) {
-            if (!player$getFoolEffect()){
+            if (!player$getFoolEffect()) {
                 if (stack.getOrCreateNbt().getBoolean("isActive")) {
                     activeCards.add(stack);
-                    ((CardManager) stack.getItem()).activateAbility(player);
+                    if (stack.getItem() instanceof TheFool || stack.getItem() instanceof TheLovers ||
+                            stack.getItem() instanceof TheSun || stack.getItem() instanceof TheWorld ||
+                            stack.getItem() instanceof TheMagician || stack.getItem() instanceof TheHangedMan ||
+                            stack.getItem() instanceof Justice || stack.getItem() instanceof Judgement) {
+                        if (stack.getOrCreateNbt().getInt("ArcanePower") == 0){
+                            stack.getOrCreateNbt().putBoolean("isActive", false);
+                            // agrega un cooldown
+                            player.getItemCooldownManager().set(stack.getItem(), 20*50);
+                        } else{
+                            ((CardManager) stack.getItem()).activateAbility(player);
+                        }
+                    } else {
+                        ((CardManager) stack.getItem()).activateAbility(player);
+                    }
                 } else {
                     ((CardManager) stack.getItem()).deactivateAbility(player);
                 }
@@ -183,6 +204,11 @@ public class CustomPlayerMixin implements IPlayerManagement {
     }
 
     @Override
+    public void player$setFirstHealthLoopOnConnect(boolean firstHealthLoop) {
+        this.firstHealthLoop = firstHealthLoop;
+    }
+
+    @Override
     public boolean player$getFoolEffect() {
         return underTheFoolEffect;
     }
@@ -190,5 +216,40 @@ public class CustomPlayerMixin implements IPlayerManagement {
     @Override
     public void player$setFoolCancellation(boolean underTheFool) {
         underTheFoolEffect = underTheFool;
+    }
+
+    @Override
+    public void player$decreaseMana() {
+        for (ItemStack stack : activeCards) {
+            if (stack.getItem() instanceof TheFool || stack.getItem() instanceof TheLovers ||
+                    stack.getItem() instanceof TheSun || stack.getItem() instanceof TheWorld ||
+                    stack.getItem() instanceof TheMagician || stack.getItem() instanceof TheHangedMan ||
+                    stack.getItem() instanceof Justice || stack.getItem() instanceof Judgement) {
+                if (stack.getOrCreateNbt().getInt("ArcanePower") < 0) {
+                    stack.getOrCreateNbt().putInt("ArcanePower", 0);
+                }
+                if (stack.getOrCreateNbt().getInt("ArcanePower") > 0) {
+                    stack.getOrCreateNbt().putInt("ArcanePower", stack.getOrCreateNbt().getInt("ArcanePower") - 1);
+                    System.out.println(stack.getOrCreateNbt().getInt("ArcanePower"));
+                }
+            }
+        }
+    }
+
+    @Override
+    public void player$increaseMana() {
+        for (ItemStack stack : cardsInInventory) {
+            if (stack.getItem() instanceof TheFool || stack.getItem() instanceof TheLovers ||
+                    stack.getItem() instanceof TheSun || stack.getItem() instanceof TheWorld ||
+                    stack.getItem() instanceof TheMagician || stack.getItem() instanceof TheHangedMan ||
+                    stack.getItem() instanceof Justice || stack.getItem() instanceof Judgement) {
+                if (stack.getOrCreateNbt().getInt("ArcanePower") > 100) {
+                    stack.getOrCreateNbt().putInt("ArcanePower", 100);
+                }
+                if (!stack.getOrCreateNbt().getBoolean("isActive") && stack.getOrCreateNbt().getInt("ArcanePower") < 100) {
+                    stack.getOrCreateNbt().putInt("ArcanePower", stack.getOrCreateNbt().getInt("ArcanePower") + 2);
+                }
+            }
+        }
     }
 }

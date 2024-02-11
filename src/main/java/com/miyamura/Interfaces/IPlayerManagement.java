@@ -25,15 +25,14 @@ public interface IPlayerManagement {
     // Temperance and Hierophant methods
     void player$increaseHealthOrXp(PlayerEntity player, int type);
     void player$resetHealth(PlayerEntity player);
+    void player$setFirstHealthLoopOnConnect(boolean firstHealthLoop);
 
     // The Fool methods
     boolean player$getFoolEffect();
     void player$setFoolCancellation(boolean underTheFool);
 
     // Mana methods
-    //void player$increaseMana(PlayerEntity player);
-    //void player$decreaseMana(PlayerEntity player);
-
-
+    void player$decreaseMana();
+    void player$increaseMana();
 
 }

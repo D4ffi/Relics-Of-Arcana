@@ -1,6 +1,7 @@
 package com.miyamura.Item.Cards;
 
 import com.miyamura.Interfaces.IPlayerManagement;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -9,15 +10,18 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class TheFool extends CardManager {
     Set<Entity> entities = new HashSet<>();
@@ -26,12 +30,20 @@ public class TheFool extends CardManager {
     public TheFool(Settings settings) {
         super(settings);
     }
-
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-        super.appendTooltip(stack, world, tooltip, context);
-        tooltip.add(Text.translatable("description.theFool"));
-        tooltip.add(Text.translatable("description.theFool2"));
+        PlayerEntity player = MinecraftClient.getInstance().player;
+        if(player != null) {
+            if(!stack.isEmpty()) {
+                tooltip.add(Text.translatable("description.theFool"));
+                tooltip.add(Text.translatable("description.theFool2"));
+                NbtCompound nbt = stack.getOrCreateNbt();
+                    String arcanePowerString = Integer.toString(nbt.getInt("ArcanePower"));
+                    MutableText mutableText = Text.translatable("amount.arcanePower").formatted(Formatting.ITALIC, Formatting.GRAY);
+                    mutableText.append(arcanePowerString);
+                    tooltip.add(mutableText);
+            }
+        }
     }
 
     @Override
@@ -52,26 +64,35 @@ public class TheFool extends CardManager {
                 continue;
             }
 
-            if (entity instanceof PlayerEntity){
+            // Check if there is a clear path between the player and the entity
+            Vec3d playerEyePos = player.getEyePos();
+            Vec3d entityEyePos = entity.getEyePos();
+            HitResult hitResult = player.getWorld().raycast(new RaycastContext(playerEyePos, entityEyePos, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, player));
+
+            // If the raycast hit a block, skip this entity
+            if (hitResult.getType() == HitResult.Type.BLOCK) {
+                continue;
+            }
+
+            if (entity instanceof PlayerEntity) {
                 IPlayerManagement playerManagement = (IPlayerManagement) entity;
                 playerManagement.player$setFoolCancellation(true);
             }
 
             if (entity instanceof LivingEntity) {
                 ((LivingEntity) entity).addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 100, 2, true, true));
-                Objects.requireNonNull(((LivingEntity) entity).getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH)).setBaseValue(12);
-                if (((LivingEntity) entity).getHealth() > 12) {
-                    ((LivingEntity) entity).setHealth(12);
+                Objects.requireNonNull(((LivingEntity) entity).getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH)).setBaseValue(((LivingEntity) entity).defaultMaxHealth * .70);
+                if (((LivingEntity) entity).getHealth() > ((LivingEntity) entity).defaultMaxHealth * .70) {
+                    ((LivingEntity) entity).setHealth((float) (((LivingEntity) entity).defaultMaxHealth * .70));
                 }
             }
-        }
-        for (Entity entity : entities) {
+
             if (!box.contains(entity.getPos())) {
                 if (entity instanceof LivingEntity) {
                     ((LivingEntity) entity).removeStatusEffect(StatusEffects.GLOWING);
                     Objects.requireNonNull(((LivingEntity) entity).getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH)).setBaseValue(((LivingEntity) entity).defaultMaxHealth);
                 }
-                if (entity instanceof PlayerEntity){
+                if (entity instanceof PlayerEntity) {
                     IPlayerManagement playerManagement = (IPlayerManagement) entity;
                     playerManagement.player$setFoolCancellation(false);
                 }

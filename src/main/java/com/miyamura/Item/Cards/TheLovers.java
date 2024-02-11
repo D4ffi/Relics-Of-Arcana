@@ -8,7 +8,10 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -32,6 +35,11 @@ public class TheLovers extends CardManager {
         super.appendTooltip(stack, world, tooltip, context);
         tooltip.add(Text.translatable("description.theLovers"));
         tooltip.add(Text.translatable("description.theLovers2"));
+        NbtCompound nbt = stack.getOrCreateNbt();
+        String arcanePowerString = Integer.toString(nbt.getInt("ArcanePower"));
+        MutableText mutableText = Text.translatable("amount.arcanePower").formatted(Formatting.ITALIC, Formatting.GRAY);
+        mutableText.append(arcanePowerString);
+        tooltip.add(mutableText);
     }
     @Override
     public void activateAbility(PlayerEntity player) {

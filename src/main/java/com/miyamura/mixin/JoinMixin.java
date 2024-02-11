@@ -15,5 +15,6 @@ public abstract class JoinMixin implements IPlayerManagement{
     private void onPlayerJoin(ClientConnection connection, ServerPlayerEntity player, CallbackInfo ci) {
         IPlayerManagement playerManagement = (IPlayerManagement) player;
         playerManagement.player$setGoldItems();
+        playerManagement.player$setFirstHealthLoopOnConnect(true);
     }
 }

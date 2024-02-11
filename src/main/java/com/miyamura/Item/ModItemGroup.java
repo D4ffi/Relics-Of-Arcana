@@ -9,10 +9,11 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+
 public class ModItemGroup {
 
     public static final ItemGroup MAJOR_ARCANA = Registry.register(Registries.ITEM_GROUP,
-            new Identifier(RelicsOfArcana.MOD_ID,"major_arcana_tab"), FabricItemGroup.builder().displayName(Text.translatable("itemGroup.major_arcana_tab"))
+            new Identifier(RelicsOfArcana.MOD_ID, "major_arcana_tab"), FabricItemGroup.builder().displayName(Text.translatable("itemGroup.major_arcana_tab"))
                     .icon(() -> initCards(new ItemStack(ModItems.THE_HIGH_PRIESTESS))).entries((displayContext, entries) -> {
 
                         entries.add(initCards(new ItemStack(ModItems.THE_FOOL)));
@@ -40,12 +41,19 @@ public class ModItemGroup {
 
                     }).build());
 
-    public static void registerItemGroups(){
+    public static void registerItemGroups() {
         RelicsOfArcana.LOGGER.info("Registering item groups for Relics of Arcana...");
     }
+
     private static ItemStack initCards(ItemStack stack) {
         NbtCompound nbt = stack.getOrCreateNbt();
         nbt.putBoolean("isActive", true);
-        return stack;
+        if ( stack.getItem() == ModItems.THE_FOOL || stack.getItem() == ModItems.THE_LOVERS ||
+                stack.getItem() == ModItems.THE_SUN || stack.getItem() == ModItems.THE_WORLD ||
+                stack.getItem() == ModItems.THE_HANGED_MAN || stack.getItem() == ModItems.THE_MAGICIAN ||
+                stack.getItem() == ModItems.JUSTICE || stack.getItem() == ModItems.JUDGEMENT) {
+                nbt.putInt("ArcanePower", 100);
     }
+        return stack;
+}
 }

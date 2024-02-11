@@ -26,6 +26,8 @@ public abstract class ActionPerTick implements IPlayerManagement {
         try {
             if (tickCounter % UPDATE_INTERVAL == 0) {
                     this.player$checkInventory(player);
+                    this.player$increaseMana();
+                    this.player$decreaseMana();
                     this.player$clearEmperorEffect();
                     this.player$resetHealth((player));
                     this.player$increaseArmor(player);
@@ -39,6 +41,7 @@ public abstract class ActionPerTick implements IPlayerManagement {
                         this.player$increaseHealthOrXp(player, 1);
                         hierophant_interval = 0;
                     }
+
                     tickCounter = 0;
                 }
         } catch (Exception e) {
