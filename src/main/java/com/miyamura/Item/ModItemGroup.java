@@ -10,6 +10,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
+@SuppressWarnings("unused")
 public class ModItemGroup {
 
     public static final ItemGroup MAJOR_ARCANA = Registry.register(Registries.ITEM_GROUP,

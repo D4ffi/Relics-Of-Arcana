@@ -2,7 +2,6 @@ package com.miyamura.mixin;
 
 import com.miyamura.Interfaces.IPlayerManagement;
 import com.miyamura.Item.Cards.*;
-import com.miyamura.Item.ModItems;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
