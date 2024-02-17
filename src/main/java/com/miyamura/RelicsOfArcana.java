@@ -3,6 +3,7 @@ package com.miyamura;
 import com.miyamura.Item.ModItemGroup;
 import com.miyamura.Item.ModItems;
 import com.miyamura.effect.ModEffects;
+import com.miyamura.networking.ModNetworking;
 import net.fabricmc.api.ModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,7 @@ public class RelicsOfArcana implements ModInitializer {
 		ModItemGroup.registerItemGroups();
 		ModItems.registerItems();
 		ModEffects.registerEffects();
+		ModNetworking.registerC2SPackets();
 		LOGGER.info("Hello Fabric world!");
 	}
 }

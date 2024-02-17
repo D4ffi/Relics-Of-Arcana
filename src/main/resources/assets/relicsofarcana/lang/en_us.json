@@ -76,5 +76,7 @@
 
 
   "itemGroup.major_arcana_tab": "Major Arcana Cards",
-  "erick.card.david": "David"
+  "erick.card.david": "David",
+  "key.categories.relicsofarcana": "Relics of Arcana",
+  "key.relicsofarcana.action": "ActionButton"
 }
