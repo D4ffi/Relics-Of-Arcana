@@ -2,6 +2,7 @@ package com.miyamura.mixin;
 
 import com.miyamura.Interfaces.IPlayerManagement;
 import com.miyamura.Item.Cards.*;
+import com.miyamura.networking.packets.ChangeDevilBuffPacket;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -104,6 +105,11 @@ public class CustomPlayerMixin implements IPlayerManagement {
             if (!player$getFoolEffect()) {
                 if (stack.getOrCreateNbt().getBoolean("isActive")) {
                     activeCards.add(stack);
+                    if (stack.getItem() instanceof TheDevil && ChangeDevilBuffPacket.getWasPressed()){
+                        stack.getOrCreateNbt().putBoolean("isActive", false);
+                        player.getItemCooldownManager().set(stack.getItem(), 20*120);
+                        ChangeDevilBuffPacket.setWasPressed(false);
+                    }
                     if (stack.getItem() instanceof TheFool || stack.getItem() instanceof TheLovers ||
                             stack.getItem() instanceof TheSun || stack.getItem() instanceof TheWorld ||
                             stack.getItem() instanceof TheMagician || stack.getItem() instanceof TheHangedMan ||
@@ -111,7 +117,7 @@ public class CustomPlayerMixin implements IPlayerManagement {
                         if (stack.getOrCreateNbt().getInt("ArcanePower") == 0){
                             stack.getOrCreateNbt().putBoolean("isActive", false);
                             // agrega un cooldown
-                            player.getItemCooldownManager().set(stack.getItem(), 20*50);
+                            player.getItemCooldownManager().set(stack.getItem(), 20*100);
                         } else{
                             ((CardManager) stack.getItem()).activateAbility(player);
                         }
@@ -229,7 +235,6 @@ public class CustomPlayerMixin implements IPlayerManagement {
                 }
                 if (stack.getOrCreateNbt().getInt("ArcanePower") > 0) {
                     stack.getOrCreateNbt().putInt("ArcanePower", stack.getOrCreateNbt().getInt("ArcanePower") - 1);
-                    System.out.println(stack.getOrCreateNbt().getInt("ArcanePower"));
                 }
             }
         }
@@ -246,7 +251,7 @@ public class CustomPlayerMixin implements IPlayerManagement {
                     stack.getOrCreateNbt().putInt("ArcanePower", 100);
                 }
                 if (!stack.getOrCreateNbt().getBoolean("isActive") && stack.getOrCreateNbt().getInt("ArcanePower") < 100) {
-                    stack.getOrCreateNbt().putInt("ArcanePower", stack.getOrCreateNbt().getInt("ArcanePower") + 2);
+                    stack.getOrCreateNbt().putInt("ArcanePower", stack.getOrCreateNbt().getInt("ArcanePower") + 1);
                 }
             }
         }

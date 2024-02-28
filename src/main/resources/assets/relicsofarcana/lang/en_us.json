@@ -74,6 +74,9 @@
   "ability.judgement": "Targets can get 3 random punishments",
   "ability.theWorld": "Gives Slowness and Blindness to targets inside area",
 
+  "message0.judgement": "§bShock Bolt",
+  "message1.judgement": "§8Withered Touch",
+  "message2.judgement": "§2Poison Touch",
 
   "itemGroup.major_arcana_tab": "Major Arcana Cards",
   "erick.card.david": "David",

@@ -3,6 +3,7 @@ package com.miyamura.mixin.CardAbilities;
 import com.miyamura.Interfaces.IPlayerManagement;
 import com.miyamura.Item.Cards.*;
 import com.miyamura.RelicsOfArcana;
+import com.miyamura.networking.packets.JudgementMode;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
@@ -33,8 +34,10 @@ public abstract class PlayerAttackMixin implements IPlayerManagement {
     @Unique
     private void activateJusticeIfCardActive(DamageSource source) {
         if (this.player$isCardActive(Justice.class)) {
-            // spawn lightning
-            generateLightningBoltOnActiveCard(source);
+            Entity attacker = source.getAttacker();
+            if (attacker instanceof LivingEntity || attacker instanceof MobEntity) {
+                generateLightningBoltOnActiveCard(attacker);
+            }
         }
     }
 
@@ -68,17 +71,14 @@ public abstract class PlayerAttackMixin implements IPlayerManagement {
     }
 
     @Unique
-    private void generateLightningBoltOnActiveCard(@NotNull DamageSource source) {
-        Entity attacker = source.getAttacker();
-        if (attacker instanceof LivingEntity || attacker instanceof MobEntity) {
-            World world = attacker.getEntityWorld();
-            LightningEntity lightning = new LightningEntity(EntityType.LIGHTNING_BOLT, world);
-            lightning.refreshPositionAfterTeleport(attacker.getX(), attacker.getY(), attacker.getZ());
-            lightning.setCosmetic(true);
-            attacker.damage(world.getDamageSources().magic(), randomDamage(0.10, 0.25, 15, 10, 8, 5));
-            world.spawnEntity(lightning);
-            attacker.setOnFireFor(8);
-        }
+    private void generateLightningBoltOnActiveCard(@NotNull Entity attacker) {
+        World world = attacker.getEntityWorld();
+        LightningEntity lightning = new LightningEntity(EntityType.LIGHTNING_BOLT, world);
+        lightning.refreshPositionAfterTeleport(attacker.getX(), attacker.getY(), attacker.getZ());
+        lightning.setCosmetic(true);
+        attacker.damage(world.getDamageSources().magic(), randomDamage(0.10, 0.25, 15, 10, 8, 5));
+        world.spawnEntity(lightning);
+        attacker.setOnFireFor(8);
     }
 
     @Unique
@@ -94,11 +94,31 @@ public abstract class PlayerAttackMixin implements IPlayerManagement {
             return defaultDamage;
         }
     }
+    @Unique
+    private void activateJudgementIfCardActive(Entity target){
+        if (this.player$isCardActive(Judgement.class)){
+            if (target instanceof LivingEntity || target instanceof MobEntity){
+                int mode = JudgementMode.getMode();
+                switch (mode){
+                    case 0:
+                        generateLightningBoltOnActiveCard(target);
+                        break;
+                    case 1:
+                        ((LivingEntity) target).addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 100, 1, true, true));
+                        break;
+                    case 2:
+                        ((LivingEntity) target).addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 100, 1, true, true));
+                        break;
+                }
+            }
+        }
+    }
     @Inject(method = "attack", at = @At("HEAD"))
     public void playerAttacked(Entity target, CallbackInfo ci) {
         activateMagicianIfCardActive(target);
         activateHangedManIfCardActive(target);
         activateDeathIfCardActive(target, (PlayerEntity) (Object) this);
+        activateJudgementIfCardActive(target);
     }
 
     @Inject(method = "damage", at = @At("HEAD"))
